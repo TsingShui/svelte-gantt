@@ -71,6 +71,9 @@ export interface TaskModel {
     labelBottom?: string;
     type?: 'milestone' | 'task';
     stickyLabel?: boolean;
+    
+    /** custom data for task */
+    data?: any;
 }
 
 export interface SvelteTask {

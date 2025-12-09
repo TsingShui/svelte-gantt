@@ -128,10 +128,24 @@
                 // somehow update tasks to (event.x + xDelta, event.y + yDelta)
                 const rootState = $root[taskId];
                 const isTarget = task.model.id === taskId;
+                const currentTask = $taskStore.entities[taskId];
+                
+                // Check if task is restricted to vertical movement only
+                const isVerticalOnly = currentTask?.model.verticalOnly;
+                
+                let eventX = x != null ? x + rootState.xDelta : null;
+                let eventWidth = width != null ? Math.abs((isTarget ? width : rootState.bWidth) + rootState.widthDelta) : null;
+                
+                if (isVerticalOnly && state.dragging) {
+                    // Keep original horizontal position for vertical-only tasks
+                    eventX = currentTask.left;
+                    eventWidth = currentTask.width;
+                }
+                
                 const event = {
-                    x: x != null ? x + rootState.xDelta : null,
+                    x: eventX,
                     y: y != null ? y + rootState.yDelta : null,
-                    width: width != null ? Math.abs((isTarget ? width : rootState.bWidth) + rootState.widthDelta) : null, // pos.width + (width - pos.bWidth) // wDelta
+                    width: eventWidth, // pos.width + (width - pos.bWidth) // wDelta
                 };
                 $root[taskId] = {
                     ...$root[taskId],
@@ -191,13 +205,30 @@
             }, model.id);
         });
 
-        const newFrom = utils.roundTo(columnService.getDateByPosition(event.x));
-        const newTo = utils.roundTo(columnService.getDateByPosition(event.x + event.width));
-        const newLeft = columnService.getPositionByDate(newFrom) | 0;
-        const newRight = columnService.getPositionByDate(newTo) | 0;
-
-        const left = newLeft;
-        const width = newRight - newLeft;
+        // Check if task is restricted to vertical movement only
+        const isVerticalOnly = model.verticalOnly;
+        
+        let left: number;
+        let width: number;
+        let newFrom: number;
+        let newTo: number;
+        
+        if (isVerticalOnly) {
+            // Keep original horizontal position and time range
+            left = task.left;
+            width = task.width;
+            newFrom = task.model.from;
+            newTo = task.model.to;
+        } else {
+            // Allow horizontal movement
+            newFrom = utils.roundTo(columnService.getDateByPosition(event.x));
+            newTo = utils.roundTo(columnService.getDateByPosition(event.x + event.width));
+            const newLeft = columnService.getPositionByDate(newFrom) | 0;
+            const newRight = columnService.getPositionByDate(newTo) | 0;
+            left = newLeft;
+            width = newRight - newLeft;
+        }
+        
         const top = $rowPadding + (targetRow?.y ?? 0);
         // get value of top from the layout
 

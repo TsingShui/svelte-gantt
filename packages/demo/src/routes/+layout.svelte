@@ -32,6 +32,7 @@
                 <a href="{base}/column-styles"><button type="button">Column styles</button></a>
                 <a href="{base}/pack-layout"><button type="button">Layouts</button></a>
                 <a href="{base}/create-tasks"><button type="button">Create tasks</button></a>
+                <a href="{base}/vertical-only"><button type="button">Vertical Only</button></a>
             </div>
     
             <GanttViewNavigation options={$options} on:updateOptions={onUpdateOptions} />

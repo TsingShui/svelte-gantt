@@ -59,6 +59,10 @@ export interface TaskModel {
      * enable resizing of task
      */
     resizable?: boolean;
+    /** 
+     * restrict task movement to vertical only (no horizontal movement)
+     */
+    verticalOnly?: boolean;
 
     /**  
      * label displayed below
